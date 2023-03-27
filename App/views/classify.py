@@ -10,12 +10,15 @@ from App.controllers import (
 from App.controllers.scan import *
 
 
-auth_views = Blueprint('classify_views', __name__, template_folder='../templates')
+classify_views = Blueprint('classify_views', __name__, template_folder='../templates')
 
+@classify_views.route(('/test_classify'), methods=['GET'])
+def test():
+    return 'works', 200
 
 
 @classify_views.route('/classify', methods=['POST'])
-@jwt_required()
+# @jwt_required()
 def upload_scan():
    
     data = request.json
