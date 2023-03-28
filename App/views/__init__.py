@@ -5,5 +5,5 @@ from .index import index_views
 from .classify import classify_views
 
 
-views = [user_views, index_views] 
+views = [user_views, index_views, classify_views] 
 # blueprints must be added to this list

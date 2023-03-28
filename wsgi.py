@@ -117,5 +117,4 @@ def user_tests_command(type):
     else:
         sys.exit(pytest.main(["-k", "App"]))
     
-
 app.cli.add_command(test)
