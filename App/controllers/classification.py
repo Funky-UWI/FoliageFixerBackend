@@ -8,8 +8,15 @@ def create_classification(name):
     db.session.commit()
     return 'Classification created.'
 
+# def update_classification_name(id, new_name):
+#     classification = Classification.query.get(id)
+#     classification.classification = new_name
+#     db.session.update(classification)
+#     db.session.commit()
+
 def get_classification_id_by_name(name):
     classification = Classification.query.filter_by(classification=name).first()
+    return classification.id
 
 def get_all_classifications():
     return Classification.query.all()

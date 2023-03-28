@@ -19,7 +19,7 @@ def initialize():
     db.drop_all()
     db.create_all()
     # create_user('bob', 'bobpass')
-    create_classification("healthy")
+    create_classification("Healthy")
     create_classification("Bacterial Spot")
     create_classification("Early Blight")
     create_classification("Late Blight")

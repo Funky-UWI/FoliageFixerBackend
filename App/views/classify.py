@@ -43,10 +43,9 @@ def upload_scan():
     severity = compute_severity(leaf.squeeze(0), disease.squeeze(0))
     print('severity: ', severity)
     # step 4 classify
-
-
-    # test data for now
-    classification = "healthy"
+    classification_model = get_classification_model()
+    outputs = classification_model(disease)
+    classification = get_classification(outputs)
 
     classification_ID= get_classification_id_by_name(classification)
     # solutions= get_all_solutions_json()
@@ -59,7 +58,9 @@ def upload_scan():
 
     return jsonify({
         "image_url": "google.com",
-        "severity": severity
+        "severity": severity,
+        "classification": classification,
+        "classification_id": classification_ID
     })
 
 

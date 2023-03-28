@@ -10,7 +10,7 @@ class ClassificationModel(nn.Module):
         # Replace the last layer with a new layer that has num_classes outputs
         num_features = self.classification.fc.in_features
         self.classification.fc = nn.Linear(num_features, num_classes)
-        self.label_dict = train_set.class_to_idx
+        # self.label_dict = train_set.class_to_idx
     
     def forward(self, x):
         # Forward pass through the classification model

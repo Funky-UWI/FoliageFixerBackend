@@ -8,7 +8,22 @@ import PIL
 
 segmentation_model = SegmentationModel()
 
-# classification_model = ClassificationModel()
+classification_model = ClassificationModel()
+weights_path = 'App/ml_models/classification-v1_stateDict.zip'
+classification_model.load_state_dict(torch.load(weights_path, map_location=torch.device('cpu')))
+
+label_dict = {
+    'Bacterial Spot': 0, 
+    'Early Blight': 1, 
+    'Healthy': 2, 
+    'Late Blight': 3,
+    'Leaf Mold': 4, 
+    'Septoria Leaf Spot': 5, 
+    'Tomato Mosaic Virus': 6, 
+    'Yellow Leaf Curl Virus': 7
+    }
+
+
 
 '''
 load seg model
@@ -19,8 +34,23 @@ def get_segmentation_model():
 '''
 load class model
 '''
-# def get_classification_model():
-#     return classification_model
+def get_classification_model():
+    # return torch.load('App/ml_models/classification-v1')
+    return classification_model
+
+'''
+get predicted classification
+'''
+def get_classification(outputs):
+    probabilities = torch.softmax(outputs, dim=1)
+    # this id may not be related to database ids
+    predicted_class_id = torch.argmax(probabilities, dim=1)
+    predicted_class = get_class_from_id(predicted_class_id.cpu().numpy()[0])
+    return predicted_class
+
+def get_class_from_id(id):
+  label = list(label_dict.keys())[list(label_dict.values()).index(id)]
+  return label
 
 '''
 /classify route receives uploaded image as a FileStorage object. 
