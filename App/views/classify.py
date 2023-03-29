@@ -11,7 +11,7 @@ from App.controllers.scan import *
 from App.controllers.classification import *
 from App.controllers.disease_Solution import *
 
-from App.controllers.ml_models import *
+# from App.controllers.ml_models import *
 
 
 
@@ -23,7 +23,7 @@ def test():
 
 
 # INITIALIZE MODELS
-segmentation_model = get_segmentation_model()
+# segmentation_model = get_segmentation_model()
 
 @classify_views.route('/classify', methods=['POST'])
 def upload_scan():
@@ -43,7 +43,7 @@ def upload_scan():
     severity = compute_severity(leaf.squeeze(0), disease.squeeze(0))
     print('severity: ', severity)
     # step 4 classify
-    classification_model = get_classification_model()
+    # classification_model = get_classification_model()
     outputs = classification_model(disease)
     classification = get_classification(outputs)
     # step 5 get classification id
