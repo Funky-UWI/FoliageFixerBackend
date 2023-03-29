@@ -88,6 +88,6 @@ def compute_severity(leaf, disease):
     # Print the number of non-black pixels
     print("Disease Non Black Pixels:", disease_pixels.item())
 
-    severity = disease_pixels / (leaf_pixels + disease_pixels)
+    severity = disease_pixels.item() / (leaf_pixels.item() + disease_pixels.item())
 
-    return severity.item() * 100
+    return severity * 100

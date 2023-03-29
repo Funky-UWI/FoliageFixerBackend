@@ -26,7 +26,7 @@ class SegmentationModel(nn.Module):
         # x = x/255.0
         x = x.to(device=device)
         # resize
-        x = torchvision.transforms.Resize(size=512)(x)
+        x = torchvision.transforms.Resize(size=(512,512))(x)
         # segment image first
         outputs = self.segmentation(x)
         # Apply softmax activation function to the output
