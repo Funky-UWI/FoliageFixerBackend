@@ -14,5 +14,3 @@ pytest==7.0.1
 python-dotenv==0.21.1
 Flask-JWT-Extended==4.4.4
 Flask-Migrate==3.1.0
-torch==2.0.0
-segmentation-models-pytorch==0.3.2
