@@ -16,7 +16,7 @@ class Scan(db.Model):
         self.image=image
         self.classification_id=classification_id
         self.severity=severity
-        self.management_strategy=management_strategy
+        # self.management_strategy=management_strategy
         self.user_id=user_id 
 
     def __repr__(self):
