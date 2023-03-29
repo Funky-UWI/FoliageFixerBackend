@@ -5,7 +5,7 @@ services:
   env: python
   repo: https://github.com/Funky-UWI/FoliageFixerBackend
   plan: free
-  branch: main
+  branch: deployment
   healthCheckPath: /healthcheck
   buildCommand: "pip install -r requirements.txt"
   startCommand: "gunicorn wsgi:app"
