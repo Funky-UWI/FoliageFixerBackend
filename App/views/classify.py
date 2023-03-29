@@ -46,21 +46,25 @@ def upload_scan():
     classification_model = get_classification_model()
     outputs = classification_model(disease)
     classification = get_classification(outputs)
-
+    # step 5 get classification id
     classification_ID= get_classification_id_by_name(classification)
-    # solutions= get_all_solutions_json()
+    # step 6 get solutions for the classification ID
+    solutions= get_all_solutions_json()
 
+    # TEMPORARY IMAGE URL
+    image_url = 'google.com'
     # Create a new Scan object and set its image attribute to the uploaded file
     # scan = create_scan(image=image_file.read(),classification=classification_ID, severity=severity,user_id=data["user_id"])
+    # scan = create_scan(image=image_url,classification=classification_ID, severity=severity,user_id=data["user_id"])
     # if scan:
     #     return jsonify(scan.toJSON()), 201
     # return jsonify({"error"}), 400
 
     return jsonify({
-        "image_url": "google.com",
         "severity": severity,
         "classification": classification,
-        "classification_id": classification_ID
+        "classification_id": classification_ID,
+        "solutions": solutions
     })
 
 
