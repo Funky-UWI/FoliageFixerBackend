@@ -17,7 +17,7 @@ from App.controllers import (
 from App.views import views
 
 # import ml models
-# from App.ml_models import *
+from App.ml_models import *
 
 def add_views(app):
     for view in views:
