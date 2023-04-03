@@ -25,7 +25,7 @@ def initialize():
     create_classification("Late Blight")
     create_classification("Leaf Mold")
     create_classification("Septoria Leaf Spot")
-    create_classification("Tomato Mosiac Virus")
+    create_classification("Tomato Mosaic Virus")
     create_classification("Yellow Leaf Curl Virus")
     
     print('database intialized')
