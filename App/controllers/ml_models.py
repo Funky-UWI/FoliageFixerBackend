@@ -9,8 +9,9 @@ import PIL
 segmentation_model = SegmentationModel()
 
 classification_model = ClassificationModel()
-weights_path = 'App/ml_models/classification-v1_stateDict.zip'
+weights_path = 'App/ml_models/classification-v3_stateDict'
 classification_model.load_state_dict(torch.load(weights_path, map_location=torch.device('cpu')))
+classification_model.train(mode=False)
 
 label_dict = {
     'Bacterial Spot': 0, 
