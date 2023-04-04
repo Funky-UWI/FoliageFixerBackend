@@ -1,5 +1,8 @@
 from flask import Blueprint, render_template, jsonify, request, send_from_directory, flash, redirect, url_for
 from flask_jwt_extended import jwt_required, current_user
+from PIL import Image
+import base64
+import io, os
 
 # from.index import index_views
 
@@ -50,6 +53,21 @@ def upload_scan():
     classification_ID= get_classification_id_by_name(classification)
     # step 6 get solutions for the classification ID
     solutions = get_solutions_by_classification(classification_ID)
+
+    #saving the image to the database as a String using base64 encoding
+    image_data=image_file.read()
+    img = Image.open(io.BytesIO(image_data))
+    # Resize the image to a fixed size
+    img = img.resize((224, 224))
+    # Convert the image to a grayscale array
+    img_array = np.array(img.convert('L'))
+    # Convert the image array to a Base64-encoded string
+    image_str = base64.b64encode(img_array).decode('utf-8')
+
+    scan=create_scan(image=image_str, classification=classification_ID, severity=severity, strategy_id, user_id=data["user_id"])
+    # if scan:
+    #     return jsonify(scan.toJSON()), 201
+    # return jsonify({"error"}), 400
 
     return jsonify({
         "severity": severity,
