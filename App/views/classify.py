@@ -3,6 +3,7 @@ from flask_jwt_extended import jwt_required, current_user
 from PIL import Image
 import base64
 import io, os
+import requests as req
 
 # from.index import index_views
 
@@ -87,7 +88,11 @@ def get_recent_scans():
     else:
         return get_all_scans_json()
 
-
+@classify_views.route('/azure', methods=['POST'])
+def azure():
+    image_file = request.files['image']
+    url = 'https://foliagefixermodel.azurewebsites.net/api/foliagefixermodel'
+    r= req.post(url)
 
 
     
