@@ -19,10 +19,7 @@ from App.controllers import (
 from App.controllers.scan import *
 from App.controllers.classification import *
 from App.controllers.disease_Solution import *
-
 from App.controllers.ml_models import *
-
-
 
 classify_views = Blueprint('classify_views', __name__, template_folder='../templates')
 
@@ -32,7 +29,7 @@ def test():
 
 
 # INITIALIZE MODELS
-segmentation_model = get_segmentation_model()
+# segmentation_model = get_segmentation_model()
 
 @classify_views.route('/classify', methods=['POST'])
 def upload_scan():
