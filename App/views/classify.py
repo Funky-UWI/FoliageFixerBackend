@@ -64,7 +64,7 @@ def upload_scan():
     # Convert the image array to a Base64-encoded string
     image_str = base64.b64encode(img_array).decode('utf-8')
 
-    scan=create_scan(image=image_str, classification=classification_ID, severity=severity, strategy_id, user_id=data["user_id"])
+    scan=create_scan(image=image_str, classification=classification_ID, severity=severity, user_id=data["user_id"])
     # if scan:
     #     return jsonify(scan.toJSON()), 201
     # return jsonify({"error"}), 400
