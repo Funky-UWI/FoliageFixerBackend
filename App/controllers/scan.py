@@ -1,8 +1,8 @@
 from App.models import Scan
 from App.database import db 
 
-def create_scan(image,classification,severity, strategy_id, user_id):
-    scan=Scan(image=image, classification=classification, severity=severity, user_id=user_id)
+def create_scan(image,classification_id,severity, user_id):
+    scan=Scan(image=image, classification_id=classification_id, severity=severity, user_id=user_id)
     db.session.add(scan)
     db.session.commit()
     return scan

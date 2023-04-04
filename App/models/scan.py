@@ -1,5 +1,6 @@
 from werkzeug.security import check_password_hash, generate_password_hash
 from App.database import db
+import base64
 
     
 class Scan(db.Model):
@@ -20,11 +21,10 @@ class Scan(db.Model):
     def toJSON(self):
         return{
             'id': self.id,
-            'classification': self.classification,
-            'classification_id': self.classification_id,
+            'classification': self.classification.get_json(),
             'severity': self.severity,
             'user_id': self.user_id,
-            'image': self.image
+            'image': base64.b64encode(self.image).decode('utf-8')
         } 
 
     def __repr__(self):

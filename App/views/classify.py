@@ -2,8 +2,10 @@ from flask import Blueprint, render_template, jsonify, request, send_from_direct
 from flask_jwt_extended import jwt_required, current_user
 from PIL import Image
 import base64
-import io, os
+import io
+import os
 import requests as req
+import numpy as np
 
 # from.index import index_views
 
@@ -37,9 +39,11 @@ def upload_scan():
     # Get the image file from the request
     image_file = request.files['image']
 
+    image_data = image_file.read()
+
     # Run the image through the classification model to get the prediction
     # step 1 load image as tensor
-    image = FileStorage_to_Tensor(image_file)
+    image = FileStorage_to_Tensor(image_data)
     print(type(image))
     # step 2 segment image
     leaf, disease = segmentation_model(image.unsqueeze(0))
@@ -56,16 +60,18 @@ def upload_scan():
     solutions = get_solutions_by_classification(classification_ID)
 
     #saving the image to the database as a String using base64 encoding
-    image_data=image_file.read()
-    img = Image.open(io.BytesIO(image_data))
-    # Resize the image to a fixed size
-    img = img.resize((224, 224))
-    # Convert the image to a grayscale array
-    img_array = np.array(img.convert('L'))
-    # Convert the image array to a Base64-encoded string
-    image_str = base64.b64encode(img_array).decode('utf-8')
+    # image_data=image_file.read()
 
-    scan=create_scan(image=image_str, classification=classification_ID, severity=severity, user_id=data["user_id"])
+    print(type(image_file), type(image_data))
+
+    # image_str = base64.b64encode(image_data).decode('utf-8')
+
+    # with image_file.stream as f:
+    #     encoded = base64.b64encode(f.read())
+    # image_str = encoded.decode('utf-8')
+
+    # print(image_str)
+    scan=create_scan(image=image_data, classification_id=classification_ID, severity=severity, user_id=data["user_id"])
     # if scan:
     #     return jsonify(scan.toJSON()), 201
     # return jsonify({"error"}), 400
@@ -92,7 +98,19 @@ def get_recent_scans():
 def azure():
     image_file = request.files['image']
     url = 'https://foliagefixermodel.azurewebsites.net/api/foliagefixermodel'
-    r= req.post(url)
+    form_data = {
+        # "image": open(image_file.read(), "rb")
+        "image": image_file.read()
+    }
+    response = req.post(url, files=form_data)
+
+    if response.status_code == 200:
+        print("File uploaded successfully.")
+        print(response.text) # this will print the response body
+        return response.text
+    else:
+        print("Error uploading file.")
+        return "Error uploading file", 400
 
 
     
