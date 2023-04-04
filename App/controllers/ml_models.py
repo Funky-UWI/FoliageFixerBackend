@@ -6,11 +6,14 @@ import torchvision
 import io
 import PIL
 
+import requests
+
 segmentation_model = SegmentationModel()
 
 classification_model = ClassificationModel()
-weights_path = 'App/ml_models/classification-v1_stateDict.zip'
+weights_path = 'App/ml_models/classification-v3_stateDict'
 classification_model.load_state_dict(torch.load(weights_path, map_location=torch.device('cpu')))
+classification_model.train(mode=False)
 
 label_dict = {
     'Bacterial Spot': 0, 
@@ -57,7 +60,8 @@ def get_class_from_id(id):
 This code converts it to a tensor so it can be sent to the model.
 '''
 def FileStorage_to_Tensor(file_storage_object):
-    image_binary = file_storage_object.read()
+    # image_binary = file_storage_object.read()
+    image_binary = file_storage_object
     pil_image = PIL.Image.open(io.BytesIO(image_binary))
     transform = torchvision.transforms.Compose([
         torchvision.transforms.ToTensor(),
@@ -91,3 +95,12 @@ def compute_severity(leaf, disease):
     severity = disease_pixels.item() / (leaf_pixels.item() + disease_pixels.item())
 
     return severity * 100
+
+
+def request_classification_from_azure(image_bytes, url='https://foliagefixermodel.azurewebsites.net/api/foliagefixermodel'):
+    form_data = {
+        "image": image_bytes
+    }
+    response = requests.post(url, files=form_data)
+
+    return response
