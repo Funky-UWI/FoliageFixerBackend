@@ -49,7 +49,7 @@ def upload_scan():
     # step 5 get classification id
     classification_ID= get_classification_id_by_name(classification)
     # step 6 get solutions for the classification ID
-    solutions = get_all_solutions_json()
+    solutions = get_solutions_by_classification(classification_ID)
 
     return jsonify({
         "severity": severity,
@@ -61,8 +61,13 @@ def upload_scan():
 
 @classify_views.route('/recent',methods=['GET'])
 def get_recent_scans():
-    scans = get_all_scans_json()
-    return jsonify(scans)
+    params = request.args
+    user_id = params.get('user_id')
+    print(user_id)
+    if user_id:
+        return get_scans_by_user_json(user_id)
+    else:
+        return get_all_scans_json()
 
 
 
