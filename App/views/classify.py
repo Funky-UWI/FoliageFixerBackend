@@ -4,7 +4,6 @@ from PIL import Image
 import base64
 import io
 import os
-import requests as req
 import numpy as np
 
 # from.index import index_views
@@ -97,20 +96,12 @@ def get_recent_scans():
 @classify_views.route('/azure', methods=['POST'])
 def azure():
     image_file = request.files['image']
-    url = 'https://foliagefixermodel.azurewebsites.net/api/foliagefixermodel'
-    form_data = {
-        # "image": open(image_file.read(), "rb")
-        "image": image_file.read()
-    }
-    response = req.post(url, files=form_data)
-
+    response = request_classification_from_azure(image_bytes=image_file.read())
     if response.status_code == 200:
-        print("File uploaded successfully.")
-        print(response.text) # this will print the response body
-        return response.text
+        return response.text, 200
     else:
-        print("Error uploading file.")
-        return "Error uploading file", 400
+        return "Error uploading file", response.status_code
+
 
 
     

@@ -6,6 +6,8 @@ import torchvision
 import io
 import PIL
 
+import requests
+
 segmentation_model = SegmentationModel()
 
 classification_model = ClassificationModel()
@@ -93,3 +95,12 @@ def compute_severity(leaf, disease):
     severity = disease_pixels.item() / (leaf_pixels.item() + disease_pixels.item())
 
     return severity * 100
+
+
+def request_classification_from_azure(image_bytes, url='https://foliagefixermodel.azurewebsites.net/api/foliagefixermodel'):
+    form_data = {
+        "image": image_bytes
+    }
+    response = requests.post(url, files=form_data)
+
+    return response
