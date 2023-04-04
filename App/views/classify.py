@@ -6,6 +6,9 @@ import io
 import os
 import numpy as np
 
+# import firebase app
+import App.firebase as fb
+
 # from.index import index_views
 
 from App.controllers import (
@@ -58,28 +61,23 @@ def upload_scan():
     # step 6 get solutions for the classification ID
     solutions = get_solutions_by_classification(classification_ID)
 
-    #saving the image to the database as a String using base64 encoding
-    # image_data=image_file.read()
-
     print(type(image_file), type(image_data))
 
-    # image_str = base64.b64encode(image_data).decode('utf-8')
+    # save image to firebase
+    response = fb.save_scan_image(image_bytes=image_data)
+    path = response['name']
+    downloadTokens = response['downloadTokens']
+    image_url = fb.get_image_url(path, downloadTokens)
+    # create scan object
+    scan=create_scan(image=image_url, classification_id=classification_ID, severity=severity, user_id=data["user_id"])
 
-    # with image_file.stream as f:
-    #     encoded = base64.b64encode(f.read())
-    # image_str = encoded.decode('utf-8')
-
-    # print(image_str)
-    scan=create_scan(image=image_data, classification_id=classification_ID, severity=severity, user_id=data["user_id"])
-    # if scan:
-    #     return jsonify(scan.toJSON()), 201
-    # return jsonify({"error"}), 400
 
     return jsonify({
         "severity": severity,
         "classification": classification,
         "classification_id": classification_ID,
-        "solutions": solutions
+        "solutions": solutions,
+        "image_url": scan.image
     })
 
 
