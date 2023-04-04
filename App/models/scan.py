@@ -24,7 +24,7 @@ class Scan(db.Model):
             'classification': self.classification.get_json(),
             'severity': self.severity,
             'user_id': self.user_id,
-            'image': base64.b64encode(self.image).decode('utf-8')
+            'image': base64.b64encode(bytes(str(self.image), encoding='utf-8')).decode('utf-8')
         } 
 
     def __repr__(self):
