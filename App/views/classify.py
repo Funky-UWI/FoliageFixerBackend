@@ -1,11 +1,15 @@
 from flask import Blueprint, render_template, jsonify, request, send_from_directory, flash, redirect, url_for
 from flask_jwt_extended import jwt_required, current_user
 from PIL import Image
+import pyrebase
 import base64
 import io
 import os
 import numpy as np
 from json import loads
+#importing firebase auth libraries
+import firebase_admin
+from firebase_admin import auth
 
 # import firebase app
 import App.firebase as fb
@@ -40,7 +44,7 @@ def upload_scan():
     #getting token from the request headers
     id_token= request.headers.get('authorization')
     try:
-        decoded_token=aith.verify_id_token(id_token)
+        decoded_token=auth.verify_id_token(id_token)
 
         # getting user id from the token
         user_id= decoded_token['uid']
@@ -114,7 +118,7 @@ def get_recent_scans():
     #getting token from the request headers
     id_token= request.headers.get('authorization')
     try:
-        decoded_token=aith.verify_id_token(id_token)
+        decoded_token=auth.verify_id_token(id_token)
 
         # getting user id from the token
         user_id= decoded_token['uid']
