@@ -36,78 +36,101 @@ segmentation_model = get_segmentation_model()
 
 @classify_views.route('/classify', methods=['POST'])
 def upload_scan():
+
+    #getting token from the request headers
+    id_token= request.headers.get('authorization')
+    try:
+        decoded_token=aith.verify_id_token(id_token)
+
+        # getting user id from the token
+        user_id= decoded_token['uid']
    
-    data = request.form
+        data = request.form
 
-    # Get the image file from the request
-    image_file = request.files['image']
+        # Get the image file from the request
+        image_file = request.files['image']
 
-    image_data = image_file.read()
+        image_data = image_file.read()
 
-    '''
-    Classification with models stored locally
-    ** do not delete
-    '''
-    # # Run the image through the classification model to get the prediction
-    # # step 1 load image as tensor
-    # image = FileStorage_to_Tensor(image_data)
-    # print(type(image))
-    # # step 2 segment image
-    # leaf, disease = segmentation_model(image.unsqueeze(0))
-    # # step 3 compute severity
-    # severity = compute_severity(leaf.squeeze(0), disease.squeeze(0))
-    # print('severity: ', severity)
-    # # step 4 classify
-    # classification_model = get_classification_model()
-    # outputs = classification_model(disease)
-    # classification = get_classification(outputs)
+        '''
+        Classification with models stored locally
+        ** do not delete
+        '''
+        # # Run the image through the classification model to get the prediction
+        # # step 1 load image as tensor
+        # image = FileStorage_to_Tensor(image_data)
+        # print(type(image))
+        # # step 2 segment image
+        # leaf, disease = segmentation_model(image.unsqueeze(0))
+        # # step 3 compute severity
+        # severity = compute_severity(leaf.squeeze(0), disease.squeeze(0))
+        # print('severity: ', severity)
+        # # step 4 classify
+        # classification_model = get_classification_model()
+        # outputs = classification_model(disease)
+        # classification = get_classification(outputs)
 
-    '''
-    classification with azure function
-    '''
-    response = request_classification_from_azure(image_bytes=image_data)
-    if response.status_code == 200:
-        model_prediction = loads(response.text)
-    else:
-        return "Error uploading file", response.status_code
+        '''
+        classification with azure function
+        '''
+        response = request_classification_from_azure(image_bytes=image_data)
+        if response.status_code == 200:
+            model_prediction = loads(response.text)
+        else:
+            return "Error uploading file", response.status_code
 
-    classification = model_prediction['classification']
-    severity = model_prediction['severity']
+        classification = model_prediction['classification']
+        severity = model_prediction['severity']
 
-    # step 5 get classification id
-    classification_ID= get_classification_id_by_name(classification)
-    # step 6 get solutions for the classification ID
-    solutions = get_solutions_by_classification(classification_ID)
+        # step 5 get classification id
+        classification_ID= get_classification_id_by_name(classification)
+        # step 6 get solutions for the classification ID
+        solutions = get_solutions_by_classification(classification_ID)
 
-    print(type(image_file), type(image_data))
+        print(type(image_file), type(image_data))
 
-    # save image to firebase
-    response = fb.save_scan_image(image_bytes=image_data)
-    path = response['name']
-    downloadTokens = response['downloadTokens']
-    image_url = fb.get_image_url(path, downloadTokens)
-    # create scan object
-    scan=create_scan(image=image_url, classification_id=classification_ID, severity=severity, user_id=data["user_id"])
+        # save image to firebase
+        response = fb.save_scan_image(image_bytes=image_data)
+        path = response['name']
+        downloadTokens = response['downloadTokens']
+        image_url = fb.get_image_url(path, downloadTokens)
+        # create scan object
+        scan=create_scan(image=image_url, classification_id=classification_ID, severity=severity, user_id=user_id)
 
-
-    return jsonify({
-        "severity": severity,
-        "classification": classification,
-        "classification_id": classification_ID,
-        "solutions": solutions,
-        "image_url": scan.image
-    })
+        return jsonify({
+            "severity": severity,
+            "classification": classification,
+            "classification_id": classification_ID,
+            "solutions": solutions,
+            "image_url": scan.image
+        })
+    except auth.AuthError:
+        # if the token is invalid or authentication fails, return an error message
+        return jsonify({'error': 'Invalid token or authentication failed'}), 401
 
 
 @classify_views.route('/recent',methods=['GET'])
 def get_recent_scans():
-    params = request.args
-    user_id = params.get('user_id')
-    print(user_id)
-    if user_id:
-        return get_scans_by_user_json(user_id)
-    else:
-        return get_all_scans_json()
+    #getting token from the request headers
+    id_token= request.headers.get('authorization')
+    try:
+        decoded_token=aith.verify_id_token(id_token)
+
+        # getting user id from the token
+        user_id= decoded_token['uid']
+   
+
+        # params = request.args
+        # user_id = params.get('user_id')
+        # print(user_id)
+        if user_id:
+            return get_scans_by_user_json(user_id)
+        else:
+            return get_all_scans_json()
+
+    except auth.AuthError:
+        # if the token is invalid or authentication fails, return an error message
+        return jsonify({'error': 'Invalid token or authentication failed'}), 401
 
 @classify_views.route('/azure', methods=['POST'])
 def azure():
