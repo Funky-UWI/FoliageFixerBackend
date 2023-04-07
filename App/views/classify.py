@@ -62,31 +62,31 @@ def upload_scan():
         Classification with models stored locally
         ** do not delete
         '''
-        # # Run the image through the classification model to get the prediction
-        # # step 1 load image as tensor
-        # image = FileStorage_to_Tensor(image_data)
-        # print(type(image))
-        # # step 2 segment image
-        # leaf, disease = segmentation_model(image.unsqueeze(0))
-        # # step 3 compute severity
-        # severity = compute_severity(leaf.squeeze(0), disease.squeeze(0))
-        # print('severity: ', severity)
-        # # step 4 classify
-        # classification_model = get_classification_model()
-        # outputs = classification_model(disease)
-        # classification = get_classification(outputs)
+        # Run the image through the classification model to get the prediction
+        # step 1 load image as tensor
+        image = FileStorage_to_Tensor(image_data)
+        print(type(image))
+        # step 2 segment image
+        leaf, disease = segmentation_model(image.unsqueeze(0))
+        # step 3 compute severity
+        severity = compute_severity(leaf.squeeze(0), disease.squeeze(0))
+        print('severity: ', severity)
+        # step 4 classify
+        classification_model = get_classification_model()
+        outputs = classification_model(disease)
+        classification = get_classification(outputs)
 
         '''
         classification with azure function
         '''
-        response = request_classification_from_azure(image_bytes=image_data)
-        if response.status_code == 200:
-            model_prediction = loads(response.text)
-        else:
-            return "Error uploading file", response.status_code
+        # response = request_classification_from_azure(image_bytes=image_data)
+        # if response.status_code == 200:
+        #     model_prediction = loads(response.text)
+        # else:
+        #     return "Error uploading file", response.status_code
 
-        classification = model_prediction['classification']
-        severity = model_prediction['severity']
+        # classification = model_prediction['classification']
+        # severity = model_prediction['severity']
 
         # step 5 get classification id
         classification_ID= get_classification_id_by_name(classification)
