@@ -2,7 +2,8 @@ import pyrebase
 import uuid
 import firebase_admin 
 from firebase_admin import auth, credentials
-
+from cryptography.fernet import Fernet
+from os import unlink
 
 firebase = None
 fb_admin=None
@@ -49,7 +50,33 @@ def get_image_url(path, downloadTokens):
     return url
 
 def connect_admin():
-    cred = credentials.Certificate('App/foliagefixer-firebase-adminsdk-y8row-36eb6d6b41.json') 
+    priv_key_path = 'priv_key.json'
+    # cred = credentials.Certificate('App/foliagefixer-firebase-adminsdk-y8row-36eb6d6b41.json') 
+    with open('decryption_key.key', 'rb') as file:
+        key = file.read()
+    fernet = Fernet(key)
+    with open('encrypted.json', 'rb') as file:
+        token = file.read()
+    priv_key = fernet.decrypt(token)
+    with open(priv_key_path, 'wb') as file:
+        file.write(priv_key)
+    cred = credentials.Certificate(priv_key_path)
+    # delete file
+    # unlink(priv_key_path)
     global fb_admin
     fb_admin = firebase_admin.initialize_app(cred) 
+    return fb_admin
+
+def decrypt_key():
+    with open('decryption_key.key', 'rb') as file:
+        key = file.read()
+    fernet = Fernet(key)
+    with open('encrypted.json', 'rb') as file:
+        token = file.read()
+    priv_key = fernet.decrypt(token)
+    with open('priv_key.json', 'wb') as file:
+        file.write(priv_key)
+    return priv_key
+
+def get_admin():
     return fb_admin

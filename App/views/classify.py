@@ -14,7 +14,8 @@ from firebase_admin import auth
 
 # import firebase app
 import App.firebase as fb
-fb_admin=fb.connect_admin()
+# fb_admin=fb.connect_admin()
+fb_admin = fb.get_admin()
 
 from App.controllers import (
     create_user,
