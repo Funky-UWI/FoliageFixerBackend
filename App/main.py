@@ -56,6 +56,8 @@ def create_app(config={}):
 
     # register firebase config
     firebase = create_firebase(app)
+    # register firebase admin
+    fb_admin = connect_admin()
 
     photos = UploadSet('photos', TEXT + DOCUMENTS + IMAGES)
     configure_uploads(app, photos)

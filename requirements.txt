@@ -19,3 +19,5 @@ http://download.pytorch.org/whl/cpu/torchvision-0.15.1%2Bcpu-cp39-cp39-linux_x86
 # torch==2.0.0
 segmentation-models-pytorch==0.3.2
 pyrebase4==4.6.0
+firebase_admin==6.1.0
+cryptography==40.0.1
