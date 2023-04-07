@@ -108,7 +108,8 @@ def upload_scan():
             "solutions": solutions,
             "image_url": scan.image
         })
-    except auth.AuthError:
+    # except auth.AuthError:
+    except:
         # if the token is invalid or authentication fails, return an error message
         return jsonify({'error': 'Invalid token or authentication failed'}), 401
 
