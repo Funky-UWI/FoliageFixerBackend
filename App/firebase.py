@@ -1,9 +1,11 @@
 import pyrebase
 import uuid
 import firebase_admin 
-from firebase_admin import auth
+from firebase_admin import auth, credentials
+
 
 firebase = None
+fb_admin=None
 
 config = {
     'apiKey': "AIzaSyBbbVpZeszVu5jT1hFVCuSvXgTz2hoWYRg",
@@ -45,3 +47,9 @@ def get_image_url(path, downloadTokens):
     storage =firebase.storage()
     url = storage.child(path).get_url(downloadTokens)
     return url
+
+def connect_admin():
+    cred = credentials.Certificate('App/foliagefixer-firebase-adminsdk-y8row-36eb6d6b41.json') 
+    global fb_admin
+    fb_admin = firebase_admin.initialize_app(cred) 
+    return fb_admin

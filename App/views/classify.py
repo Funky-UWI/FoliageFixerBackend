@@ -8,13 +8,13 @@ import os
 import numpy as np
 from json import loads
 #importing firebase auth libraries
+import pyrebase
 import firebase_admin
 from firebase_admin import auth
 
 # import firebase app
 import App.firebase as fb
-
-# from.index import index_views
+fb_admin=fb.connect_admin()
 
 from App.controllers import (
     create_user,
@@ -43,6 +43,7 @@ def upload_scan():
 
     #getting token from the request headers
     id_token= request.headers.get('authorization')
+    print(id_token)
     try:
         decoded_token=auth.verify_id_token(id_token)
 
@@ -109,7 +110,8 @@ def upload_scan():
             "image_url": scan.image
         })
     # except auth.AuthError:
-    except:
+    except Exception as E:
+        print(E)
         # if the token is invalid or authentication fails, return an error message
         return jsonify({'error': 'Invalid token or authentication failed'}), 401
 
@@ -133,7 +135,8 @@ def get_recent_scans():
         else:
             return get_all_scans_json()
 
-    except auth.AuthError:
+    except Exception as E:
+        print(E)
         # if the token is invalid or authentication fails, return an error message
         return jsonify({'error': 'Invalid token or authentication failed'}), 401
 
@@ -150,3 +153,28 @@ def azure():
 
     
 
+@classify_views.route('/loginn', methods=['POST'])
+def login():
+    # get the user's email and password from the request body
+    email = request.form.get('email')
+    password = request.form.get('password')
+
+    print(email)
+
+    # authenticate the user using the Firebase Authentication REST API
+    response = requests.post(
+        'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=' + "AIzaSyBbbVpZeszVu5jT1hFVCuSvXgTz2hoWYRg",
+        json={
+            'email': email,
+            'password': password,
+            'returnSecureToken': True
+        }
+    )
+
+    # if the authentication was successful, return the custom token
+    if response.status_code == 200:
+        return jsonify({'token': response.json()['idToken']})
+
+    # if the authentication failed, return an error message
+    else:
+        return jsonify({'error': 'Authentication failed'}), response.status_code
