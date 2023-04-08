@@ -65,7 +65,7 @@ def connect_admin():
         file.write(priv_key)
     cred = credentials.Certificate(priv_key_path)
     # delete file
-    unlink(priv_key_path)
+    # unlink(priv_key_path)
     global fb_admin
     fb_admin = firebase_admin.initialize_app(cred) 
     return fb_admin
