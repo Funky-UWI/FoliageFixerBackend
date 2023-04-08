@@ -2,8 +2,8 @@ from App.models import User
 from App.models import Scan
 from App.database import db
 
-def create_user(username, password,scans):
-    newuser = User(username=username, password=password, scans=scans )
+def create_user(uid):
+    newuser = User(uid)
     db.session.add(newuser)
     db.session.commit()
     return newuser

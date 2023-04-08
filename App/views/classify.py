@@ -179,3 +179,21 @@ def login():
     # if the authentication failed, return an error message
     else:
         return jsonify({'error': 'Authentication failed'}), response.status_code
+
+
+@classify_views.route('/adduser', methods=['POST'])
+def add_user_view():
+    id_token = request.headers.get('authorization')
+    try:
+        decoded_token=auth.verify_id_token(id_token)
+    except Exception as e:
+        print(e)
+        return jsonify(e.__str__()), 401
+    
+    uid = decoded_token['uid']
+    print(decoded_token)
+    try:
+        user = create_user(uid)
+    except Exception as e:
+        return jsonify(e.__str__()), 400
+    return user.get_json()
