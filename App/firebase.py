@@ -54,10 +54,13 @@ def connect_admin():
     # cred = credentials.Certificate('App/foliagefixer-firebase-adminsdk-y8row-36eb6d6b41.json') 
     with open('decryption_key.key', 'rb') as file:
         key = file.read()
+    print(key)
     fernet = Fernet(key)
     with open('encrypted.json', 'rb') as file:
         token = file.read()
+    print(token)
     priv_key = fernet.decrypt(token)
+    print(priv_key)
     with open(priv_key_path, 'wb') as file:
         file.write(priv_key)
     cred = credentials.Certificate(priv_key_path)
