@@ -4,8 +4,12 @@ from App.database import db
 
 def create_classification(name):
     classification = Classification(name)
-    db.session.add(classification)
-    db.session.commit()
+    try:
+        db.session.add(classification)
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        raise e
     return 'Classification created.'
 
 # def update_classification_name(id, new_name):
