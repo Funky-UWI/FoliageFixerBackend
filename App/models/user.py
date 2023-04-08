@@ -11,6 +11,6 @@ class User(db.Model):
     def get_json(self):
         return{
             'id': self.id,
-            'scans': self.scans
+            'scans': [scan.toJSON() for scan in self.scans]
         }
 

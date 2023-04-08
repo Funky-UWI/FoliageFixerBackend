@@ -3,9 +3,13 @@ from App.models import Scan
 from App.database import db
 
 def create_user(uid):
-    newuser = User(uid)
-    db.session.add(newuser)
-    db.session.commit()
+    try:
+        newuser = User(uid)
+        db.session.add(newuser)
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        raise e
     return newuser
 
 def get_user_by_username(username):
