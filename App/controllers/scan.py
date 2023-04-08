@@ -2,9 +2,13 @@ from App.models import Scan
 from App.database import db 
 
 def create_scan(image,classification_id,severity, user_id):
-    scan=Scan(image=image, classification_id=classification_id, severity=severity, user_id=user_id)
-    db.session.add(scan)
-    db.session.commit()
+    try:
+        scan=Scan(image=image, classification_id=classification_id, severity=severity, user_id=user_id)
+        db.session.add(scan)
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        raise e
     return scan
 
 def get_all_scans():

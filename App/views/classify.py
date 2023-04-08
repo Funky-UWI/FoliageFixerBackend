@@ -108,10 +108,16 @@ def upload_scan():
             "image_url": scan.image
         })
     # except auth.AuthError:
+    except (auth.ExpiredIdTokenError, auth.ExpiredSessionCookieError, auth.InvalidIdTokenError, auth.InvalidSessionCookieError) as E:
+        print(E)
+        return jsonify({'error': E.__str__()}), 401
     except Exception as E:
         print(E)
         # if the token is invalid or authentication fails, return an error message
-        return jsonify({'error': 'Invalid token or authentication failed'}), 401
+        # return jsonify({'error': 'Invalid token or authentication failed'}), 401
+        return jsonify({
+            'error': E.__str__()
+        }), 500
 
 
 @classify_views.route('/recent',methods=['GET'])
@@ -133,10 +139,16 @@ def get_recent_scans():
         else:
             return get_all_scans_json()
 
+    except (auth.ExpiredIdTokenError, auth.ExpiredSessionCookieError, auth.InvalidIdTokenError, auth.InvalidSessionCookieError) as E:
+        print(E)
+        return jsonify({'error': E.__str__()}), 401
     except Exception as E:
         print(E)
         # if the token is invalid or authentication fails, return an error message
-        return jsonify({'error': 'Invalid token or authentication failed'}), 401
+        # return jsonify({'error': 'Invalid token or authentication failed'}), 401
+        return jsonify({
+            'error': E.__str__()
+        }), 500
 
 @classify_views.route('/azure', methods=['POST'])
 def azure():
@@ -153,30 +165,38 @@ def azure():
 
 @classify_views.route('/loginn', methods=['POST'])
 def login():
-    # get the user's email and password from the request body
-    email = request.form.get('email')
-    password = request.form.get('password')
+    try:
+        # get the user's email and password from the request body
+        email = request.form.get('email')
+        password = request.form.get('password')
 
-    print(email)
+        print(email)
 
-    # authenticate the user using the Firebase Authentication REST API
-    response = requests.post(
-        'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=' + "AIzaSyBbbVpZeszVu5jT1hFVCuSvXgTz2hoWYRg",
-        json={
-            'email': email,
-            'password': password,
-            'returnSecureToken': True
-        }
-    )
+        # authenticate the user using the Firebase Authentication REST API
+        response = requests.post(
+            'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=' + "AIzaSyBbbVpZeszVu5jT1hFVCuSvXgTz2hoWYRg",
+            json={
+                'email': email,
+                'password': password,
+                'returnSecureToken': True
+            }
+        )
 
-    # if the authentication was successful, return the custom token
-    if response.status_code == 200:
-        return jsonify({'token': response.json()['idToken']})
+        # if the authentication was successful, return the custom token
+        if response.status_code == 200:
+            return jsonify({'token': response.json()['idToken']})
 
-    # if the authentication failed, return an error message
-    else:
-        return jsonify({'error': 'Authentication failed'}), response.status_code
-
+        # if the authentication failed, return an error message
+        else:
+            return jsonify({'error': 'Authentication failed'}), response.status_code
+    except Exception as E:
+        print(E)
+        # if the token is invalid or authentication fails, return an error message
+        # return jsonify({'error': 'Invalid token or authentication failed'}), 401
+        return jsonify({
+            'error': E.__str__()
+        }), 500
+    
 
 @classify_views.route('/adduser', methods=['POST'])
 def add_user_view():
