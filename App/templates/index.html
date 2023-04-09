@@ -1,10 +1,18 @@
 {% extends "layout.html" %}
-{% block title %}Flask MVC App{% endblock %}
-{% block page %}Flask MVC App{% endblock %}
+{% block title %}FoliageFixer Flask API{% endblock %}
+{% block page %}FoliageFixer{% endblock %}
 
 {{ super() }}
 
 {% block content %}
-    <h1>Flask MVC</h1>
-    <p>This is a boileplate flask application which follows the MVC pattern for structuring the project. hello.</p>
+    <h1>FoliageFixer API</h1>
+    <p>This API functions as the backend for the android app.</p>
+    <ul>
+        <li>
+            <b>/classify</b>
+        </li>
+        <li>
+            <b>/recent</b>
+        </li>
+    </ul>
 {% endblock %}
