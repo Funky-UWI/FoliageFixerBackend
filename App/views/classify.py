@@ -104,7 +104,7 @@ def upload_scan():
             "severity": severity,
             "classification": classification,
             "classification_id": classification_ID,
-            "solutions": solutions,
+            "solutions": [solution['solution'] for solution in solutions],
             "image_url": scan.image
         })
     # except auth.AuthError:
@@ -135,7 +135,12 @@ def get_recent_scans():
         # user_id = params.get('user_id')
         # print(user_id)
         if user_id:
-            return get_scans_by_user_json(user_id)
+            scans = get_scans_by_user_json(user_id)
+            for scan in scans:
+                solutions = get_solutions_by_classification(scan['classification']['id'])
+                solutions = [solution['solution'] for solution in solutions]
+                scan['solution'] = solutions
+            return scans
         else:
             return get_all_scans_json()
 
