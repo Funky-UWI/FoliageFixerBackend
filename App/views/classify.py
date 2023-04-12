@@ -104,7 +104,7 @@ def upload_scan():
             "severity": severity,
             "classification": classification,
             "classification_id": classification_ID,
-            "solutions": [solution['solution'] for solution in solutions],
+            "solutions": "None",
             "image_url": scan.image
         })
     # except auth.AuthError:
