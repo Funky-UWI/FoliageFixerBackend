@@ -103,11 +103,16 @@ def upload_scan():
         # create scan object
         scan=create_scan(image=image_url, classification_id=classification_ID, severity=severity, user_id=user_id)
 
+        solutions_str = ''
+        for solution in solutions:
+            solutions_str += solution['solution'] + ';'
+        solutions_str = solutions_str[:-1]
+
         return jsonify({
             "severity": severity,
             "classification": classification,
             "classification_id": classification_ID,
-            "solutions": [solution['solution'] for solution in solutions],
+            "solutions": solutions_str,
             "image_url": scan.image
         })
     # except auth.AuthError:
