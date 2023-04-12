@@ -143,8 +143,11 @@ def get_recent_scans():
             scans = get_scans_by_user_json(user_id)
             for scan in scans:
                 solutions = get_solutions_by_classification(scan['classification']['id'])
-                solutions = [solution['solution'] for solution in solutions]
-                scan['solution'] = solutions
+                solutions_str = ''
+                for solution in solutions:
+                    solutions_str += solution['solution'] + ';'
+                solutions_str = solutions_str[:-1]
+                scan['solution'] = solutions_str
             return scans
         else:
             return get_all_scans_json()
