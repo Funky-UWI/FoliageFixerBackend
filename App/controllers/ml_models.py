@@ -11,9 +11,9 @@ import requests
 segmentation_model = SegmentationModel()
 
 classification_model = ClassificationModel()
-weights_path = 'App/ml_models/classification-v3_stateDict'
-classification_model.load_state_dict(torch.load(weights_path, map_location=torch.device('cpu')))
-classification_model.train(mode=False)
+# weights_path = 'App/ml_models/classification-v3_stateDict'
+# classification_model.load_state_dict(torch.load(weights_path, map_location=torch.device('cpu')))
+# classification_model.train(mode=False)
 
 label_dict = {
     'Bacterial Spot': 0, 
@@ -45,6 +45,7 @@ def get_classification_model():
 get predicted classification
 '''
 def get_classification(outputs):
+    outputs = torch.from_numpy(outputs)
     probabilities = torch.softmax(outputs, dim=1)
     # this id may not be related to database ids
     predicted_class_id = torch.argmax(probabilities, dim=1)
@@ -76,10 +77,13 @@ Calculate severity.
 def compute_severity(leaf, disease):
     # Check the shape of the tensor (should be in the format C x H x W)
     C, H, W = leaf.shape
+    print(type(leaf))
     # Flatten the tensor to a 2D matrix
     image_flat = leaf.view(C, H * W)
+    print(image_flat)
     # Count the number of non-black pixels (i.e. pixels with at least one non-zero channel)
     leaf_pixels = torch.sum(torch.any(image_flat != 0, dim=0))
+    print(leaf_pixels)
     # Print the number of non-black pixels
     print("Leaf Non Black Pixels:", leaf_pixels.item())
 

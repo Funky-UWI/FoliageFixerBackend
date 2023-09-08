@@ -1,56 +1,34 @@
 import torch
-import torch.nn as nn
 import torchvision
 import io
 import PIL
+import numpy as np
+import tensorflow as tf
 
-class SegmentationModel(nn.Module):
-    def __init__(self, seg_path='App/ml_models/mobilenetv2.3'):
-        super().__init__()
-        if torch.cuda.is_available():
-            self.device = torch.device('cuda')
-            print(torch.cuda.get_device_name(device))
-        else:
-            self.device = None
-            print('GPU is not available')
-        # Define your segmentation model here
-        # self.segmentation = models.segmentation.__dict__["fcn_resnet50"](pretrained=True)
-        self.segmentation = torch.load(seg_path, map_location=torch.device('cpu'))
-        # Freeze the segmentation layers
-        for param in self.segmentation.parameters():
-            param.requires_grad = False
+class SegmentationModel():
+    def __init__(self, model_path = "App/ml_models/segmodelv3.tflite"):
+        # Load the TFLite model and allocate tensors
+        self.interpreter = tf.lite.Interpreter(model_path=model_path)
+        self.interpreter.allocate_tensors()
+
+        # Get input and output tensors
+        self.input_details = self.interpreter.get_input_details()
+        self.output_details = self.interpreter.get_output_details()
+        self.input_shape = self.input_details[0]['shape']
 
     def forward(self, x):
-        device = self.device
-        # Forward pass through the segmentation model
-        # x = x/255.0
-        # resize
-        x = torchvision.transforms.Resize(size=(512,512))(x)
-        if x.shape[1] == 4:
-          # if batch_size is 1
-          if x.shape[0] == 1:
-            img = x.squeeze(0)
-            # transpose to shape: 512, 512, 4
-            img = np.transpose(img, (1,2,0))
-            pil_image = PIL.Image.fromarray(img.numpy(), 'RGBA')
-            rgb_image = pil_image.convert('RGB')
-            rgb_array = np.asarray(rgb_image, dtype=np.float32)
-            x = torch.from_numpy(np.transpose(rgb_array, (2,1,0)))
-            x = x.unsqueeze(0)
-        x = x.to(device=device)
-        # segment image first
-        outputs = self.segmentation(x)
-        # Apply softmax activation function to the output
-        probs = torch.softmax(outputs, dim=1)
-        # Get the predicted labels
-        _, labels = torch.max(probs, dim=1)
+        input_data = x
+        # input_data = torchvision.transforms.functional.convert_image_dtype(input_data, dtype=torch.float32)
+        input_data = torchvision.transforms.Resize((512,512))(input_data)
+        self.interpreter.set_tensor(self.input_details[0]['index'], input_data)
 
-        disease_mask = (labels == 2).float()
-        disease_mask = torch.unsqueeze(disease_mask, 1)
-        healthy_mask = (labels == 1).float()
-        healthy_mask = torch.unsqueeze(healthy_mask, 1)
-        leaf_mask = disease_mask + healthy_mask
+        self.interpreter.invoke()
 
-        disease = x * disease_mask
-        leaf = x * leaf_mask
-        return (leaf, disease)
+        # get_tensor() returns a copy of the tensor data
+        # use tensor() in order to get a pointer to the tensor
+        leaf_data = self.interpreter.get_tensor(self.output_details[0]['index'])
+        disease_data = self.interpreter.get_tensor(self.output_details[1]['index'])
+        leaf_data = torch.from_numpy(leaf_data)
+        disease_data = torch.from_numpy(disease_data)
+
+        return (leaf_data, disease_data)
