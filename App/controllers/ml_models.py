@@ -1,7 +1,6 @@
 from App.ml_models import ( SegmentationModel, ClassificationModel )
 
 import torch
-import torch.nn as nn
 import torchvision
 import io
 import PIL
