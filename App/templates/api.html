@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+{% block title %}FoliageFixer Flask API{% endblock %}
+{% block page %}FoliageFixer{% endblock %}
+
+{{ super() }}
+
+{% block content %}
+    <h1>FoliageFixer API</h1>
+    <p>This API functions as the backend for the android app.</p>
+    <ul>
+        <li>
+            <b>/classify</b>
+        </li>
+        <li>
+            <b>/recent</b>
+        </li>
+    </ul>
+
+    <form action="/classify" method="post">
+        
+    </form>
+
+    <label for="photo">Choose a photo!</label>
+    <input type="file" id="photo" name="photo" accept=" image/*">
+
+{% endblock %}

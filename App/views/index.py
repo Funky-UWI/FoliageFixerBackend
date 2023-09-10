@@ -8,6 +8,14 @@ index_views = Blueprint('index_views', __name__, template_folder='../templates')
 def index_page():
     return render_template('index.html')
 
+@index_views.route('/api', methods=['GET'])
+def api_page():
+    return render_template('api.html')
+
+@index_views.route('/login', methods=['GET'])
+def login_page():
+    return render_template('login.html')
+
 @index_views.route('/init', methods=['GET'])
 def init():
     db.drop_all()
